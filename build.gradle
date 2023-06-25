@@ -3,8 +3,9 @@ plugins {
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
   id 'org.flywaydb.flyway' version '8.0.5'
   id 'java'
-  id "org.jetbrains.kotlin.jvm" version "1.6.10"
+  id "org.jetbrains.kotlin.jvm" version "1.8.22"
   id 'nu.studer.jooq' version '8.2.1'
+  id "org.jetbrains.kotlin.plugin.spring" version "1.8.22"
 }
 
 group = 'com.example'
@@ -21,6 +22,9 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-jooq'
   runtimeOnly 'org.postgresql:postgresql'
   implementation 'org.flywaydb:flyway-core'
+
+  developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
   jooqGenerator 'org.postgresql:postgresql:42.3.8'
@@ -50,29 +54,42 @@ kotlin {
   }
 }
 
-//jooq {
-//    version = '3.18.4'
-//    edition = nu.studer.gradle.jooq.JooqEdition.OSS
-//    configurations {
-//        main {
-//            generationTool {
-//                logging = org.jooq.meta.jaxb.Logging.WARN
-//                jdbc {
-//                    driver = 'org.postgresql.Driver'
-//                    url = '<database-url>'
-//                    user = '<database-user>'
-//                    password = '<database-password>'
-//                }
-//                generator {
-//                    database {}
-//                    generate {}
-//                    target {
-//                        packageName = '<target-package>'
-//                        directory = generatedSourcesDir
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
+def getDatabasePort() {
+  "./show_db_port.sh".execute().text.trim()
+}
+
+tasks.create("showPort") {
+  doLast {
+    println "jdbc:postgresql://localhost:${getDatabasePort()}/postgres"
+  }
+}
+
+jooq {
+   version = '3.18.4'
+   edition = nu.studer.gradle.jooq.JooqEdition.OSS
+   configurations {
+       main {
+           generationTool {
+               logging = org.jooq.meta.jaxb.Logging.WARN
+               jdbc {
+                   driver = 'org.postgresql.Driver'
+                   url = "jdbc:postgresql://localhost:${getDatabasePort()}/postgres"
+                   user = 'postgres'
+                   password = 'password'
+               }
+               generator {
+                   database {
+                     name = 'org.jooq.meta.postgres.PostgresDatabase'
+                     inputSchema = 'public'
+                   }
+                   generate {}
+                   target {
+                       packageName = 'cn.gaoyuexiang.demo.todo.jooq'
+                       directory = generatedSourcesDir
+                   }
+               }
+           }
+       }
+   }
+}
 

@@ -45,10 +45,6 @@ sourceSets {
   }
 }
 
-bootJar {
-  enabled = false
-}
-
 kotlin {
   jvmToolchain {
     languageVersion = JavaLanguageVersion.of(17)
@@ -57,12 +53,6 @@ kotlin {
 
 def getDatabasePort() {
   "./show_db_port.sh".execute().text.trim()
-}
-
-tasks.create("showPort") {
-  doLast {
-    println "jdbc:postgresql://localhost:${getDatabasePort()}/postgres"
-  }
 }
 
 jooq {

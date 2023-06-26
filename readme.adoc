@@ -1,0 +1,35 @@
+= Spring Docker Compose & Testcontainers Demo
+
+== Docker Compose Demo
+
+=== Run Application with Docker Compose Supporting
+
+[source,shell]
+----
+./gradlew bootRun
+----
+
+=== Run Jar
+
+When database is running:
+
+[source,shell]
+----
+docker-compose up -d
+source ./prepare_datasource_properties.sh
+./gradlew build
+java -jar build/libs/spring-boot-docker-compose-demo-0.0.1-SNAPSHOT.jar
+----
+
+When database is shutdown:
+
+[source,shell]
+----
+# follow the above steps
+docker-compose stop
+java -jar build/libs/spring-boot-docker-compose-demo-0.0.1-SNAPSHOT.jar
+----
+
+== Testcontainers Demo
+
+// TODO

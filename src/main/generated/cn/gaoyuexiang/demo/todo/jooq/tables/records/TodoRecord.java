@@ -26,8 +26,9 @@ public class TodoRecord extends UpdatableRecordImpl<TodoRecord> implements Recor
     /**
      * Setter for <code>public.todo.id</code>.
      */
-    public void setId(UUID value) {
+    public TodoRecord setId(UUID value) {
         set(0, value);
+        return this;
     }
 
     /**
@@ -40,8 +41,9 @@ public class TodoRecord extends UpdatableRecordImpl<TodoRecord> implements Recor
     /**
      * Setter for <code>public.todo.title</code>.
      */
-    public void setTitle(String value) {
+    public TodoRecord setTitle(String value) {
         set(1, value);
+        return this;
     }
 
     /**

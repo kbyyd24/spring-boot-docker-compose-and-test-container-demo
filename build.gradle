@@ -22,6 +22,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-jooq'
   runtimeOnly 'org.postgresql:postgresql'
   implementation 'org.flywaydb:flyway-core'
+  implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2'
 
   developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
@@ -65,31 +66,35 @@ tasks.create("showPort") {
 }
 
 jooq {
-   version = '3.18.4'
-   edition = nu.studer.gradle.jooq.JooqEdition.OSS
-   configurations {
-       main {
-           generationTool {
-               logging = org.jooq.meta.jaxb.Logging.WARN
-               jdbc {
-                   driver = 'org.postgresql.Driver'
-                   url = "jdbc:postgresql://localhost:${getDatabasePort()}/postgres"
-                   user = 'postgres'
-                   password = 'password'
-               }
-               generator {
-                   database {
-                     name = 'org.jooq.meta.postgres.PostgresDatabase'
-                     inputSchema = 'public'
-                   }
-                   generate {}
-                   target {
-                       packageName = 'cn.gaoyuexiang.demo.todo.jooq'
-                       directory = generatedSourcesDir
-                   }
-               }
-           }
-       }
-   }
+  version = '3.18.4'
+  edition = nu.studer.gradle.jooq.JooqEdition.OSS
+  configurations {
+    main {
+      generateSchemaSourceOnCompilation = false
+      generationTool {
+        logging = org.jooq.meta.jaxb.Logging.WARN
+        jdbc {
+          driver = 'org.postgresql.Driver'
+          url = "jdbc:postgresql://localhost:${getDatabasePort()}/postgres"
+          user = 'postgres'
+          password = 'password'
+        }
+        generator {
+          database {
+            name = 'org.jooq.meta.postgres.PostgresDatabase'
+            inputSchema = 'public'
+          }
+          generate {
+            records = true
+            fluentSetters = true
+          }
+          target {
+            packageName = 'cn.gaoyuexiang.demo.todo.jooq'
+            directory = generatedSourcesDir
+          }
+        }
+      }
+    }
+  }
 }
 
